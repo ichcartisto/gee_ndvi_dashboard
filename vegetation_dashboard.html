@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_e4dd740b445aac7fa0887d797b150e2e {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+    
+                    <style>
+                        .foliumtooltip {
+                            
+                        }
+                       .foliumtooltip table{
+                            margin: auto;
+                        }
+                        .foliumtooltip tr{
+                            text-align: left;
+                        }
+                        .foliumtooltip th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+    
+                    <style>
+                        .foliumpopup {
+                            font-size: 13px; min-width: 240px;
+                        }
+                       .foliumpopup table{
+                            margin: auto;
+                        }
+                        .foliumpopup tr{
+                            text-align: left;
+                        }
+                        .foliumpopup th{
+                            padding: 2px; padding-right: 8px;
+                        }
+                    </style>
+            
+</head>
+<body>
+    
+    <div style="position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:9999;background:rgba(255,255,255,0.95);padding:8px 18px;border:1px solid #888;border-radius:4px;text-align:center;font-family:Arial,sans-serif;box-shadow:0 1px 4px rgba(0,0,0,0.25);max-width:42vw"><div style="font-size:16px;font-weight:bold">Vegetation Health Dashboard: NDVI Anomaly by Conservation Area</div><div style="font-size:12px;color:#555;margin-top:2px">San Francisco | Nov 2025 - Apr 2026 vs 10-season baseline (2015/16 - 2024/25)</div></div>
+    <div style="position:fixed;bottom:34px;left:12px;z-index:9999;background:rgba(255,255,255,0.95);padding:10px 14px;border:1px solid #888;border-radius:4px;font:13px Arial,sans-serif;width:230px"><b>NDVI anomaly</b><div style="font-size:11px;color:#555">current - baseline (NDVI units)</div><div style="height:14px;margin:8px 0 2px;border:1px solid #666;background:linear-gradient(to right, #a50026, #f46d43, #ffffbf, #a6d96a, #006837)"></div><div style="display:flex;justify-content:space-between;font-size:11px"><span>&le; -0.06</span><span>0</span><span>&ge; +0.06</span></div><div style="display:flex;justify-content:space-between;font-size:10px;color:#555"><span>less green</span><span>no change</span><span>more green</span></div><hr style="margin:8px 0"><b>Status</b><div>Stressed: anomaly &le; -0.05</div><div>Normal: between -0.05 and +0.05</div><div>Greener: anomaly &ge; +0.05</div><div style="display:flex;align-items:center;margin-top:3px"><span style="width:16px;height:12px;background:#bdbdbd;border:1px solid #666;margin-right:6px"></span>No data</div></div>
+    
+            <div class="folium-map" id="map_e4dd740b445aac7fa0887d797b150e2e" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_e4dd740b445aac7fa0887d797b150e2e = L.map(
+                "map_e4dd740b445aac7fa0887d797b150e2e",
+                {
+                    center: [37.9, -122.515],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_3babde6f7ee8ff34e338e496aec655b0 = L.tileLayer(
+                "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 19,
+  "maxNativeZoom": 19,
+  "noWrap": false,
+  "attribution": "\u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abc",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_3babde6f7ee8ff34e338e496aec655b0.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+    
+            map_e4dd740b445aac7fa0887d797b150e2e.fitBounds(
+                [[37.72, -122.78], [38.08, -122.25]],
+                {"maxZoom": 15, "paddingBottomRight": [40, 40], "paddingTopLeft": [40, 90]}
+            );
+        
+    
+        function geo_json_5d6564cd5640a5d72358f90eb626c959_styler(feature) {
+            switch(feature.id) {
+                case "0": 
+                    return {"color": "#333333", "fillColor": "#338b47ff", "fillOpacity": 0.8, "weight": 1.5};
+                case "1": 
+                    return {"color": "#333333", "fillColor": "#a9da6cff", "fillOpacity": 0.8, "weight": 1.5};
+                case "2": 
+                    return {"color": "#333333", "fillColor": "#56a351ff", "fillOpacity": 0.8, "weight": 1.5};
+                default:
+                    return {"color": "#333333", "fillColor": "#85c360ff", "fillOpacity": 0.8, "weight": 1.5};
+            }
+        }
+        function geo_json_5d6564cd5640a5d72358f90eb626c959_highlighter(feature) {
+            switch(feature.id) {
+                default:
+                    return {"color": "#000000", "fillOpacity": 0.95, "weight": 3.5};
+            }
+        }
+
+        function geo_json_5d6564cd5640a5d72358f90eb626c959_onEachFeature(feature, layer) {
+
+            layer.on({
+                mouseout: function(e) {
+                    if(typeof e.target.setStyle === "function"){
+                            geo_json_5d6564cd5640a5d72358f90eb626c959.resetStyle(e.target);
+                    }
+                },
+                mouseover: function(e) {
+                    if(typeof e.target.setStyle === "function"){
+                        const highlightStyle = geo_json_5d6564cd5640a5d72358f90eb626c959_highlighter(e.target.feature)
+                        e.target.setStyle(highlightStyle);
+                    }
+                },
+            });
+        };
+        var geo_json_5d6564cd5640a5d72358f90eb626c959 = L.geoJson(null, {
+                onEachFeature: geo_json_5d6564cd5640a5d72358f90eb626c959_onEachFeature,
+            
+                style: geo_json_5d6564cd5640a5d72358f90eb626c959_styler,
+            ...{
+}
+        });
+
+        function geo_json_5d6564cd5640a5d72358f90eb626c959_add (data) {
+            geo_json_5d6564cd5640a5d72358f90eb626c959
+                .addData(data);
+        }
+            geo_json_5d6564cd5640a5d72358f90eb626c959_add({"bbox": [-122.78, 37.72, -122.25, 38.08], "features": [{"bbox": [-122.6, 37.95, -122.45, 38.08], "geometry": {"coordinates": [[[-122.6, 37.95], [-122.45, 37.95], [-122.45, 38.08], [-122.6, 38.08], [-122.6, 37.95]]], "type": "Polygon"}, "id": "0", "properties": {"anomaly": 0.0506517383430804, "anomaly_txt": "+0.051", "area_id": 1, "area_name": "North Preserve", "baseline": 0.5201093373415123, "baseline_txt": "0.520", "current": 0.5908968664527772, "current_txt": "0.591", "status": "Greener"}, "type": "Feature"}, {"bbox": [-122.42, 37.88, -122.25, 38.0], "geometry": {"coordinates": [[[-122.42, 37.88], [-122.25, 37.88], [-122.25, 38.0], [-122.42, 38.0], [-122.42, 37.88]]], "type": "Polygon"}, "id": "1", "properties": {"anomaly": 0.029197488422735, "anomaly_txt": "+0.029", "area_id": 2, "area_name": "East Wetlands", "baseline": 0.4328761064700393, "baseline_txt": "0.433", "current": 0.4727327022274868, "current_txt": "0.473", "status": "Normal"}, "type": "Feature"}, {"bbox": [-122.58, 37.72, -122.4, 37.86], "geometry": {"coordinates": [[[-122.58, 37.72], [-122.4, 37.72], [-122.4, 37.86], [-122.58, 37.86], [-122.58, 37.72]]], "type": "Polygon"}, "id": "2", "properties": {"anomaly": 0.0444789184108378, "anomaly_txt": "+0.044", "area_id": 3, "area_name": "South Forest", "baseline": 0.3388863481962327, "baseline_txt": "0.339", "current": 0.4012177309402277, "current_txt": "0.401", "status": "Normal"}, "type": "Feature"}, {"bbox": [-122.78, 37.8, -122.62, 37.96], "geometry": {"coordinates": [[[-122.78, 37.8], [-122.62, 37.8], [-122.62, 37.96], [-122.78, 37.96], [-122.78, 37.8]]], "type": "Polygon"}, "id": "3", "properties": {"anomaly": 0.0360336348897015, "anomaly_txt": "+0.036", "area_id": 4, "area_name": "West Hills", "baseline": 0.7289959946147276, "baseline_txt": "0.729", "current": 0.7955947842334721, "current_txt": "0.796", "status": "Normal"}, "type": "Feature"}], "type": "FeatureCollection"});
+
+        
+    
+    geo_json_5d6564cd5640a5d72358f90eb626c959.bindTooltip(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["area_name", "status", "anomaly_txt"];
+    let aliases = ["Area:", "Status:", "Anomaly:"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i]}</th>
+            
+            <td>${handleObject(layer.feature.properties[v])}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "sticky": true,
+  "className": "foliumtooltip",
+});
+                     
+    
+    geo_json_5d6564cd5640a5d72358f90eb626c959.bindPopup(
+    function(layer){
+    let div = L.DomUtil.create('div');
+    
+    let handleObject = feature => {
+        if (feature === null) {
+            return '';
+        } else if (typeof(feature)=='object') {
+            return JSON.stringify(feature);
+        } else {
+            return feature;
+        }
+    }
+    let fields = ["area_name", "status", "current_txt", "baseline_txt", "anomaly_txt"];
+    let aliases = ["Area", "Status", "Current NDVI (median)", "Baseline NDVI (median)", "Anomaly (current - baseline)"];
+    let table = '<table>' +
+        String(
+        fields.map(
+        (v,i)=>
+        `<tr>
+            <th>${aliases[i].toLocaleString()}</th>
+            
+            <td>${handleObject(layer.feature.properties[v]).toLocaleString()}</td>
+        </tr>`).join(''))
+    +'</table>';
+    div.innerHTML=table;
+    
+    return div
+    }
+    ,{
+  "className": "foliumpopup",
+});
+                     
+    
+            geo_json_5d6564cd5640a5d72358f90eb626c959.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+    
+            var feature_group_cef309f3101f237770910069d749d3d0 = L.featureGroup(
+                {
+}
+            );
+        
+    
+            var marker_bb79c19b401a84c109f56474f6fa333e = L.marker(
+                [38.015, -122.525],
+                {
+}
+            ).addTo(feature_group_cef309f3101f237770910069d749d3d0);
+        
+    
+            var icon_bea36262b9694560070e06eff1253db3 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_a8709f312f008d6d6c0f430365474eb6 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_873ca4f08e9ca026fba39573b81080c5 = $(`<div id="html_873ca4f08e9ca026fba39573b81080c5" style="width: 100.0%; height: 100.0%;"><div style='font-size:13px'><b>Headquarters</b><table><tr><td style='padding-right:10px'><b>area_id</b></td><td>1</td></tr><tr><td style='padding-right:10px'><b>area_name</b></td><td>North Preserve</td></tr></table></div></div>`)[0];
+                popup_a8709f312f008d6d6c0f430365474eb6.setContent(html_873ca4f08e9ca026fba39573b81080c5);
+            
+        
+
+        marker_bb79c19b401a84c109f56474f6fa333e.bindPopup(popup_a8709f312f008d6d6c0f430365474eb6)
+        ;
+
+        
+    
+    
+            marker_bb79c19b401a84c109f56474f6fa333e.bindTooltip(
+                `<div>
+                     North Preserve
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_bb79c19b401a84c109f56474f6fa333e.setIcon(icon_bea36262b9694560070e06eff1253db3);
+            
+    
+            var marker_00e195bb68c4e5767975f2ad6c7cbe66 = L.marker(
+                [37.94, -122.335],
+                {
+}
+            ).addTo(feature_group_cef309f3101f237770910069d749d3d0);
+        
+    
+            var icon_0ad4d58f386f490557fa648c91a5d28e = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_f86a1ca61631805148b615f5b1b1310b = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_4b3e05b5d1a509e8d414beb845253caa = $(`<div id="html_4b3e05b5d1a509e8d414beb845253caa" style="width: 100.0%; height: 100.0%;"><div style='font-size:13px'><b>Headquarters</b><table><tr><td style='padding-right:10px'><b>area_id</b></td><td>2</td></tr><tr><td style='padding-right:10px'><b>area_name</b></td><td>East Wetlands</td></tr></table></div></div>`)[0];
+                popup_f86a1ca61631805148b615f5b1b1310b.setContent(html_4b3e05b5d1a509e8d414beb845253caa);
+            
+        
+
+        marker_00e195bb68c4e5767975f2ad6c7cbe66.bindPopup(popup_f86a1ca61631805148b615f5b1b1310b)
+        ;
+
+        
+    
+    
+            marker_00e195bb68c4e5767975f2ad6c7cbe66.bindTooltip(
+                `<div>
+                     East Wetlands
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_00e195bb68c4e5767975f2ad6c7cbe66.setIcon(icon_0ad4d58f386f490557fa648c91a5d28e);
+            
+    
+            var marker_c1a00068eaad08cf3ce241b8cc7cf184 = L.marker(
+                [37.79, -122.49],
+                {
+}
+            ).addTo(feature_group_cef309f3101f237770910069d749d3d0);
+        
+    
+            var icon_6776675ddfcda6fd6ac364e646c43375 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_0385ea62b4b474f05c57b0b4d1032aff = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_578cc42ab18a142a64e8391fc408cdee = $(`<div id="html_578cc42ab18a142a64e8391fc408cdee" style="width: 100.0%; height: 100.0%;"><div style='font-size:13px'><b>Headquarters</b><table><tr><td style='padding-right:10px'><b>area_id</b></td><td>3</td></tr><tr><td style='padding-right:10px'><b>area_name</b></td><td>South Forest</td></tr></table></div></div>`)[0];
+                popup_0385ea62b4b474f05c57b0b4d1032aff.setContent(html_578cc42ab18a142a64e8391fc408cdee);
+            
+        
+
+        marker_c1a00068eaad08cf3ce241b8cc7cf184.bindPopup(popup_0385ea62b4b474f05c57b0b4d1032aff)
+        ;
+
+        
+    
+    
+            marker_c1a00068eaad08cf3ce241b8cc7cf184.bindTooltip(
+                `<div>
+                     South Forest
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_c1a00068eaad08cf3ce241b8cc7cf184.setIcon(icon_6776675ddfcda6fd6ac364e646c43375);
+            
+    
+            var marker_25d02e8c013e8a481abe0fc2ca51248a = L.marker(
+                [37.88, -122.7],
+                {
+}
+            ).addTo(feature_group_cef309f3101f237770910069d749d3d0);
+        
+    
+            var icon_21d852b10b1e65a14b7cd2206c3fe530 = L.AwesomeMarkers.icon(
+                {
+  "markerColor": "darkblue",
+  "iconColor": "white",
+  "icon": "home",
+  "prefix": "fa",
+  "extraClasses": "fa-rotate-0",
+}
+            );
+        
+    
+        var popup_e868e0cd0ef06e60f0747c52f7e98407 = L.popup({
+  "maxWidth": 320,
+});
+
+        
+            
+                var html_57e9146f12cb276aed19a1f4f0385d85 = $(`<div id="html_57e9146f12cb276aed19a1f4f0385d85" style="width: 100.0%; height: 100.0%;"><div style='font-size:13px'><b>Headquarters</b><table><tr><td style='padding-right:10px'><b>area_id</b></td><td>4</td></tr><tr><td style='padding-right:10px'><b>area_name</b></td><td>West Hills</td></tr></table></div></div>`)[0];
+                popup_e868e0cd0ef06e60f0747c52f7e98407.setContent(html_57e9146f12cb276aed19a1f4f0385d85);
+            
+        
+
+        marker_25d02e8c013e8a481abe0fc2ca51248a.bindPopup(popup_e868e0cd0ef06e60f0747c52f7e98407)
+        ;
+
+        
+    
+    
+            marker_25d02e8c013e8a481abe0fc2ca51248a.bindTooltip(
+                `<div>
+                     West Hills
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+                marker_25d02e8c013e8a481abe0fc2ca51248a.setIcon(icon_21d852b10b1e65a14b7cd2206c3fe530);
+            
+    
+            feature_group_cef309f3101f237770910069d749d3d0.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+    map_e4dd740b445aac7fa0887d797b150e2e.attributionControl.addAttribution("NDVI: MODIS MOD13Q1 v061 (NASA LP DAAC) via Google Earth Engine");
+    
+            var layer_control_acfda8bfc34c5470f93d238833dbb076_layers = {
+                base_layers : {
+                },
+                overlays :  {
+                    "NDVI anomaly by conservation area" : geo_json_5d6564cd5640a5d72358f90eb626c959,
+                    "Headquarters" : feature_group_cef309f3101f237770910069d749d3d0,
+                },
+            };
+            let layer_control_acfda8bfc34c5470f93d238833dbb076 = L.control.layers(
+                layer_control_acfda8bfc34c5470f93d238833dbb076_layers.base_layers,
+                layer_control_acfda8bfc34c5470f93d238833dbb076_layers.overlays,
+                {
+  "position": "topright",
+  "collapsed": false,
+  "autoZIndex": true,
+}
+            ).addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+
+        
+    
+            tile_layer_3babde6f7ee8ff34e338e496aec655b0.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+    
+            geo_json_5d6564cd5640a5d72358f90eb626c959.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+    
+                marker_bb79c19b401a84c109f56474f6fa333e.setIcon(icon_bea36262b9694560070e06eff1253db3);
+            
+    
+                marker_00e195bb68c4e5767975f2ad6c7cbe66.setIcon(icon_0ad4d58f386f490557fa648c91a5d28e);
+            
+    
+                marker_c1a00068eaad08cf3ce241b8cc7cf184.setIcon(icon_6776675ddfcda6fd6ac364e646c43375);
+            
+    
+                marker_25d02e8c013e8a481abe0fc2ca51248a.setIcon(icon_21d852b10b1e65a14b7cd2206c3fe530);
+            
+    
+            feature_group_cef309f3101f237770910069d749d3d0.addTo(map_e4dd740b445aac7fa0887d797b150e2e);
+        
+</script>
+</html>
